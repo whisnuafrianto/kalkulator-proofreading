@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proofreading Naskah Penelitian</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Satu halaman, dua tahap: hitung biaya + isi nama, lalu pembayaran. Invoice PDF dibuat otomatis saat dicetak. */
+:root {
+  --bg: #eef3f2;
+  --surface: #ffffff;
+  --fg: #0f2b2a;
+  --muted: #4a6563;
+  --line: #cfdcda;
+  --accent: #0b6b64;
+  --accent-fg: #ffffff;
+  --soft: #dcebe8;
+  --wa: #1a7f45;
+  --wa-fg: #ffffff;
+  --del: #a33a2c;
+  --err: #a33a2c;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1b1b; --surface: #112828; --fg: #e3f0ee; --muted: #9ab5b1;
+    --line: #234140; --accent: #5fd1c4; --accent-fg: #06201e; --soft: #17403d;
+    --wa: #4cc58a; --wa-fg: #04170d; --del: #ef8a7a; --err: #ef8a7a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1b1b; --surface: #112828; --fg: #e3f0ee; --muted: #9ab5b1;
+  --line: #234140; --accent: #5fd1c4; --accent-fg: #06201e; --soft: #17403d;
+  --wa: #4cc58a; --wa-fg: #04170d; --del: #ef8a7a; --err: #ef8a7a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 16px/1.55 var(--f-body);
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { font: 700 clamp(1.9rem, 6vw, 2.8rem)/1.05 var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -0.015em; }
+h2 { font: 700 1.25rem/1.2 var(--f-display); margin: 0 0 12px; }
+p { margin: 0; }
+.lead { color: var(--muted); font-size: 1.05rem; max-width: 56ch; margin-top: 10px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+label { display: flex; flex-direction: column; gap: 6px; font-weight: 500; font-size: 0.92rem; min-width: 0; }
+label .hint { font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+input[type="number"], input[type="text"], input[type="tel"], input[type="email"] {
+  font: 500 1.1rem var(--f-num); color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0;
+}
+input[type="text"], input[type="tel"], input[type="email"] { font-family: var(--f-body); }
+input[aria-invalid="true"] { border-color: var(--err); }
+.err { color: var(--err); font-size: 0.85rem; font-weight: 500; }
+.check { flex-direction: row; align-items: center; gap: 10px; min-height: 44px; font-weight: 500; }
+.check input { width: 22px; height: 22px; margin: 0; accent-color: var(--accent); flex: none; }
+.step-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; margin: 22px 0 10px; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--soft); padding: 5px; border-radius: 10px; }
+.choice button {
+  font: 600 0.95rem var(--f-body); color: var(--fg); background: transparent; border: 0;
+  padding: 11px 8px; border-radius: 7px; cursor: pointer;
+}
+.choice button[aria-pressed="true"] { background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.15); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.card {
+  position: relative; text-align: left; cursor: pointer; font: inherit; color: var(--fg);
+  background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0;
+}
+.card:hover { border-color: var(--accent); }
+.card[aria-checked="true"] { border-color: var(--accent); background: var(--soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.card .d { font: 700 1.05rem var(--f-display); }
+.card .p { font: 500 1rem var(--f-num); color: var(--accent); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.card .r { font-size: 0.78rem; color: var(--muted); }
+.tag {
+  align-self: flex-start; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  background: var(--accent); color: var(--accent-fg); border-radius: 4px; padding: 1px 6px; margin-bottom: 6px;
+}
+.tag.none { visibility: hidden; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; align-items: center; margin-top: 22px; padding-top: 20px; border-top: 1px dashed var(--line); }
+.total-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.total { font: 500 clamp(2rem, 8vw, 2.8rem)/1.1 var(--f-num); color: var(--accent); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.calc { font-size: 0.85rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; text-align: center;
+  font: 600 1rem var(--f-body); text-decoration: none; padding: 14px 18px; min-height: 48px; border-radius: 9px;
+  background: var(--accent); color: var(--accent-fg); border: 1.5px solid transparent; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn-wa { background: var(--wa); color: var(--wa-fg); }
+.btn-ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+.btn-block { width: 100%; }
+.fine { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+.phone b { font-family: var(--f-num); color: var(--fg); user-select: all; }
+ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+.sample { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: var(--bg); margin-top: 14px; font-size: 0.95rem; }
+.sample .cap { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.sample del { color: var(--del); }
+.sample ins { color: var(--accent); text-decoration: none; font-weight: 600; }
+.sample .cm { margin-top: 10px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--soft); border-radius: 0 6px 6px 0; font-size: 0.88rem; }
+details { border-top: 1px solid var(--line); padding: 12px 0; }
+details:first-of-type { border-top: 0; }
+summary { cursor: pointer; font-weight: 600; }
+details p { color: var(--muted); margin-top: 8px; }
+.contact { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; justify-content: space-between; }
+.bar { display: none; }
+
+/* Tahap pembayaran */
+#bayar { max-width: 520px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.p-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.p-card h3 { font: 700 1rem var(--f-display); margin: 0; }
+.p-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.p-from { font: 700 1.05rem var(--f-display); min-width: 0; overflow-wrap: anywhere; }
+.pill { font-size: 0.75rem; font-weight: 600; background: #fff1d6; color: #7a4d00; border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+:root[data-theme="dark"] .pill { background: #3a2c0e; color: #f2c56b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill { background: #3a2c0e; color: #f2c56b; } }
+.p-sub { font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
+.p-sub span { font-family: var(--f-num); color: var(--fg); }
+.p-hero { background: var(--accent); color: var(--accent-fg); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.p-hero .k { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.p-hero .amt { font: 500 clamp(1.9rem, 9vw, 2.3rem)/1.1 var(--f-num); overflow-wrap: anywhere; }
+.p-hero .btn { background: transparent; color: var(--accent-fg); border-color: var(--accent-fg); margin-top: 6px; }
+.p-line { display: flex; justify-content: space-between; gap: 12px; font-size: 0.92rem; }
+.p-line small { display: block; color: var(--muted); font-size: 0.78rem; }
+.p-line .v { font-family: var(--f-num); white-space: nowrap; }
+.p-sep { height: 1px; background: var(--line); }
+.p-muted { color: var(--muted); font-size: 0.85rem; }
+.p-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+.methods { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--soft); padding: 5px; border-radius: 10px; }
+.methods button { font: 600 0.85rem var(--f-body); color: var(--fg); background: transparent; border: 0; padding: 10px 6px; min-height: 44px; border-radius: 7px; cursor: pointer; }
+.methods button[aria-pressed="true"] { background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.15); color: var(--accent); }
+.kv { display: grid; gap: 10px; }
+.kv .k { font-size: 0.75rem; color: var(--muted); }
+.kv .vv { font-weight: 600; overflow-wrap: anywhere; }
+.kv .num { font: 500 1.15rem var(--f-num); }
+.kv-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.kv-row > div { min-width: 0; }
+.kv-row .btn { min-width: 76px; padding: 10px 14px; min-height: 44px; }
+.tip { background: var(--soft); border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; }
+.qris img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 8px; background: #fff; }
+.p-actions { display: grid; gap: 10px; }
+.p-actions .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.back { align-self: flex-start; background: transparent; border: 0; color: var(--accent); font: 600 0.95rem var(--f-body); cursor: pointer; padding: 8px 0; min-height: 44px; }
+
+/* Invoice untuk cetak (tidak tampil di layar) */
+#print-invoice { display: none; }
+.invoice { display: flex; flex-direction: column; gap: 18px; }
+.inv-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.inv-title { font: 700 1.9rem/1 var(--f-display); letter-spacing: 0.04em; color: #0b6b64; }
+.inv-meta { color: #444; font-size: 0.9rem; margin-top: 6px; }
+.inv-from { text-align: right; font-size: 0.9rem; }
+.inv-to { font-size: 0.92rem; overflow-wrap: anywhere; }
+.lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #444; }
+.invoice table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.invoice th, .invoice td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #999; }
+.invoice th { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.invoice td.n, .invoice th.n { text-align: right; white-space: nowrap; }
+.invoice tfoot td { border-bottom: 0; font-weight: 700; font-size: 1.05rem; }
+.invoice .pay { background: #f2f2f2; border-radius: 8px; padding: 14px 16px; font-size: 0.92rem; display: grid; gap: 4px; overflow-wrap: anywhere; }
+.inv-notes { font-size: 0.82rem; color: #444; }
+.inv-notes ul { margin: 4px 0 0; padding-left: 18px; }
+
+@media (max-width: 700px) {
+  body { padding-bottom: 110px; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--surface); border-top: 1px solid var(--line);
+    padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .bar .t { font: 500 1.15rem var(--f-num); color: var(--accent); min-width: 0; overflow-wrap: anywhere; }
+  .bar .btn { padding: 12px 14px; white-space: nowrap; }
+}
+@media print {
+  #screen { display: none !important; }
+  .bar { display: none !important; }
+  :root { color-scheme: light; }
+  html, body { background: #fff !important; color: #000 !important; }
+  body { padding: 0 !important; }
+  .wrap { max-width: none; gap: 0; }
+  #print-invoice { display: block !important; color: #000; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+  <div id="screen" style="display:flex; flex-direction:column; gap:22px">
+
+    <header>
+      <h1>Proofreading naskah penelitian, dihitung per kata</h1>
+      <p class="lead">Naskahmu diperiksa sampai level huruf, kata, dan kalimat, lalu hasilnya kamu terima langsung di Docs. Hitung biayanya di bawah, lalu lanjut ke pembayaran.</p>
+    </header>
+
+    <!-- Tahap 1: hitung -->
+    <section class="panel" id="hitung" aria-label="Hitung biaya">
+      <h2>Hitung biaya</h2>
+      <div class="grid">
+        <label>Jumlah kata naskah
+          <input id="main" type="number" inputmode="numeric" min="0" step="1" value="7000">
+          <span class="hint">Contoh. Ganti dengan jumlah katamu (Word: Review → Word Count)</span>
+        </label>
+        <label id="refs-field">Jumlah kata daftar pustaka
+          <input id="refs" type="number" inputmode="numeric" min="0" step="1" value="2000">
+          <span class="hint">Terpisah dari teks utama di atas</span>
+        </label>
+      </div>
+
+      <div class="step-label">Daftar pustaka</div>
+      <div class="choice" role="group" aria-label="Daftar pustaka ikut diperiksa atau tidak">
+        <button type="button" id="inc-no" aria-pressed="false">Tanpa daftar pustaka</button>
+        <button type="button" id="inc-yes" aria-pressed="true">Dengan daftar pustaka</button>
+      </div>
+
+      <div class="step-label">Kapan butuh selesai?</div>
+      <div class="cards" id="cards" role="radiogroup" aria-label="Durasi pengerjaan"></div>
+
+      <div class="step-label">Data pemesan</div>
+      <div class="grid">
+        <label>Nama
+          <input id="f-name" type="text" autocomplete="name" aria-describedby="name-err">
+          <span class="err" id="name-err" role="alert" hidden>Isi nama dulu supaya pesananmu bisa dicatat.</span>
+        </label>
+        <label>Judul naskah (opsional)
+          <input id="f-title" type="text" autocomplete="off">
+        </label>
+        <label>Nama penulis untuk sertifikat (opsional)
+          <input id="f-author" type="text" autocomplete="off">
+          <span class="hint">Isi kalau kamu ingin sertifikat atas namamu</span>
+        </label>
+        <label>Nomor HP
+          <input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 0812xxxxxxxx" aria-required="true" aria-describedby="phone-err">
+          <span class="err" id="phone-err" role="alert" hidden>Isi nomor HP yang benar, minimal 9 angka.</span>
+        </label>
+        <label>Email
+          <input id="f-email" type="email" inputmode="email" autocomplete="email" placeholder="nama@email.com" aria-required="true" aria-describedby="email-err">
+          <span class="err" id="email-err" role="alert" hidden>Isi email dengan format yang benar, contoh nama@email.com.</span>
+        </label>
+      </div>
+      <p class="err" id="words-err" role="alert" hidden style="margin-top:10px">Isi jumlah kata naskahmu lebih dari 0.</p>
+
+      <div class="summary" aria-live="polite">
+        <div>
+          <div class="total-label">Perkiraan total</div>
+          <div class="total" id="total">Rp0</div>
+          <div class="calc" id="calc"></div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-block" id="go-1">Lanjut ke pembayaran</button>
+          <p class="fine phone">Ada pertanyaan? <a href="#" id="ask-1" target="_blank" rel="noopener" style="color:var(--accent)">Tanya dulu via WhatsApp</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tahap 2: pembayaran -->
+    <section id="bayar" hidden aria-label="Pembayaran">
+      <button type="button" class="back" id="back">&larr; Ubah pesanan</button>
+
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div class="p-top">
+          <div class="p-from" id="p-from"></div>
+          <div class="pill">Menunggu pembayaran</div>
+        </div>
+        <div class="p-sub">Invoice <span id="p-inv"></span> untuk <span id="p-cust"></span></div>
+      </div>
+
+      <div class="p-hero">
+        <div class="k">Total tagihan</div>
+        <div class="amt" id="p-total">Rp0</div>
+        <button type="button" class="btn btn-block" data-copy="amount">Salin nominal</button>
+      </div>
+
+      <div class="p-card">
+        <h3>Ringkasan pesanan</h3>
+        <div>
+          <div class="p-muted">Naskah</div>
+          <div id="p-title">-</div>
+        </div>
+        <div id="p-author-wrap" hidden>
+          <div class="p-muted">Nama penulis</div>
+          <div id="p-author"></div>
+        </div>
+        <div id="p-contact-wrap" hidden>
+          <div class="p-muted">Kontak pemesan</div>
+          <div id="p-contact" style="overflow-wrap:anywhere"></div>
+        </div>
+        <div class="p-sep"></div>
+        <div id="p-rows" style="display:grid; gap:10px"></div>
+        <div class="p-line p-muted"><div>Durasi pengerjaan</div><div id="p-dur"></div></div>
+      </div>
+
+      <div class="p-card">
+        <h3>Ketentuan</h3>
+        <ul class="p-list">
+          <li>Pembayaran yang sudah masuk tidak bisa dikembalikan.</li>
+          <li>Pengerjaan dihitung setelah pembayaran dikonfirmasi dan file naskah dikirim.</li>
+          <li>Revisi unlimited hanya untuk naskah yang sama.</li>
+          <li>Tabel ikut dihitung. Daftar pustaka dihitung hanya jika dipilih.</li>
+        </ul>
+        <label class="check"><input id="p-agree" type="checkbox"><span>Saya sudah membaca ketentuan</span></label>
+      </div>
+
+      <div class="p-card">
+        <h3>Cara bayar</h3>
+        <p class="p-muted" id="p-lock">Centang persetujuan ketentuan di atas untuk melihat cara bayar.</p>
+        <div id="p-pay" hidden style="flex-direction:column; gap:14px">
+          <a class="btn btn-block" id="p-online" href="#" target="_blank" rel="noopener" hidden>Bayar online</a>
+          <div class="methods" id="p-methods" role="group" aria-label="Pilih cara bayar">
+            <button type="button" id="tab-transfer" aria-pressed="true">Transfer</button>
+            <button type="button" id="tab-qris" aria-pressed="false">QRIS</button>
+            <button type="button" id="tab-ewallet" aria-pressed="false">E-wallet</button>
+          </div>
+          <div class="kv" id="pane-transfer">
+            <div id="p-banks" style="display:grid; gap:14px"></div>
+          </div>
+          <div class="kv" id="pane-qris" hidden>
+            <div class="qris"><img id="p-qris" src="qris.png" alt="Kode QRIS untuk pembayaran"></div>
+            <p class="p-muted" id="p-qris-miss" hidden>Gambar QRIS belum tersedia. Hubungi admin.</p>
+            <div class="tip">Masukkan nominal sesuai total tagihan saat membayar dengan QRIS.</div>
+          </div>
+          <div class="kv" id="pane-ewallet" hidden>
+            <div><div class="k">E-wallet</div><div class="vv" id="p-ewn">-</div></div>
+            <div class="kv-row">
+              <div><div class="k">Nomor</div><div class="vv num" id="p-ewa">-</div></div>
+              <button type="button" class="btn btn-ghost" data-copy="ewacct">Salin</button>
+            </div>
+            <div id="p-ewh-wrap"><div class="k">Atas nama</div><div class="vv" id="p-ewh">-</div></div>
+          </div>
+          <div class="tip" id="p-tip">Sebelum mengirim, pastikan nama penerima yang tampil di aplikasi sama dengan nama di atas.</div>
+        </div>
+        <p class="p-muted" id="p-nomethod" hidden>Cara pembayaran belum tersedia. Hubungi admin lewat WhatsApp.</p>
+      </div>
+
+      <div class="p-card">
+        <h3>Langkah selanjutnya</h3>
+        <ol class="steps">
+          <li>Bayar sesuai nominal <b id="p-step-total"></b>.</li>
+          <li>Kirim bukti pembayaran lewat WhatsApp.</li>
+          <li>Kirim juga file naskahmu. Pengerjaan dimulai setelah pembayaran dikonfirmasi.</li>
+        </ol>
+      </div>
+
+      <div class="p-actions">
+        <a class="btn btn-wa btn-block" id="p-paid" href="#" target="_blank" rel="noopener" hidden>Saya sudah bayar, kirim bukti</a>
+        <div class="two">
+          <a class="btn btn-ghost" id="p-ask" href="#" target="_blank" rel="noopener">Tanya admin</a>
+          <button type="button" class="btn btn-ghost" id="print-v">Simpan PDF</button>
+        </div>
+      </div>
+      <p class="fine phone" style="text-align:center">WhatsApp admin <b>0821-1302-5726</b></p>
+    </section>
+
+    <section class="panel">
+      <h2>Yang kamu dapat</h2>
+      <ul class="plain">
+        <li>Komentar atas penulisan dan kesesuaiannya dengan standar penulisan naskah akademik.</li>
+        <li>Saran perbaikan langsung pada teks.</li>
+        <li>Saran perbaikan pada setiap huruf, kata, dan kalimat yang perlu disesuaikan.</li>
+        <li>Hasil diberikan dalam bentuk Docs.</li>
+      </ul>
+      <div class="sample" aria-label="Contoh ilustrasi Bahasa Indonesia">
+        <div class="cap">Contoh ilustrasi, Bahasa Indonesia (bukan naskah asli)</div>
+        <div>Penelitian ini bertujuan <del>untuk</del> mengetahui pengaruh <del>dari</del> kepemimpinan <del>kepada</del><ins>terhadap</ins> kinerja karyawan.</div>
+        <div class="cm"><b>Komentar:</b> Hapus "untuk" dan "dari" agar kalimat lebih ringkas. Gunakan "terhadap" setelah kata "pengaruh".</div>
+      </div>
+      <div class="sample" lang="en" aria-label="Illustrative example in English">
+        <div class="cap">Illustrative example, English (not an actual manuscript)</div>
+        <div>The aim of this research <del>is for investigating</del><ins>is to investigate</ins> the effect of nitrogen fertilizer <del>to</del><ins>on</ins> plant growth, and the data <del>was</del><ins>were</ins> analyzed using ANOVA.</div>
+        <div class="cm"><b>Comment:</b> Use the infinitive after "is". The noun "effect" takes "on", and "data" is plural, so "were" is the correct verb form.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Cara pesan</h2>
+      <ol class="steps">
+        <li>Hitung biaya di atas, pilih durasi, lalu isi namamu.</li>
+        <li>Klik <b>Lanjut ke pembayaran</b>, baca ketentuan, lalu bayar.</li>
+        <li>Kirim bukti pembayaran dan file naskahmu lewat WhatsApp.</li>
+        <li>Pengerjaan mulai dihitung setelah pembayaran dikonfirmasi dan file naskah dikirimkan. Hasil kamu terima di Docs.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>Ketentuan</h2>
+      <ul class="plain">
+        <li>Harga yang tertera adalah harga per kata. Contoh: 1.000 kata layanan 24 jam = Rp300 × 1.000, total Rp300.000.</li>
+        <li>Tabel ikut dihitung. Daftar pustaka dihitung hanya jika dipilih.</li>
+        <li>Pembayaran yang sudah masuk tidak bisa dikembalikan dengan alasan apa pun.</li>
+        <li>Revisi unlimited hanya untuk naskah yang sama.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Pertanyaan yang sering muncul</h2>
+      <details>
+        <summary>Apa manfaatnya untuk naskah?</summary>
+        <p>Naskah menjadi lebih runtut, lebih kuat secara akademik, dan lebih siap diajukan.</p>
+      </details>
+      <details>
+        <summary>Apakah layanan ini hanya untuk naskah yang akan diajukan ke dosen?</summary>
+        <p>Tidak. Layanan ini dapat digunakan untuk naskah yang akan diajukan kepada pihak mana pun, misalnya dosen pembimbing, penguji, redaksi jurnal, atau lembaga lain yang membutuhkan naskah dengan penulisan akademik yang baik.</p>
+      </details>
+      <details>
+        <summary>Bidang ilmu apa saja yang dapat dilayani?</summary>
+        <p>Seluruh bidang ilmu dapat dilayani, baik untuk penelitian kuantitatif, kualitatif, maupun mix method. Apabila naskah memuat istilah yang sangat teknis, mohon disampaikan saat pemesanan agar kesesuaiannya dapat dipastikan terlebih dahulu.</p>
+      </details>
+      <details>
+        <summary>Bahasa apa yang didukung?</summary>
+        <p>Naskah berbahasa Indonesia maupun berbahasa Inggris dapat diperiksa. Contoh keduanya tersedia pada bagian "Yang kamu dapat" di atas.</p>
+      </details>
+      <details>
+        <summary>Bagaimana cara menghitung jumlah kata?</summary>
+        <p>Di Microsoft Word, buka tab Review lalu klik Word Count. Kalau naskahmu di Docs, buka Tools → Word count. Hitung teks utama dan daftar pustaka secara terpisah supaya kalkulator di atas akurat.</p>
+      </details>
+      <details>
+        <summary>Kapan pengerjaan dimulai?</summary>
+        <p>Setelah pembayaran dikonfirmasi dan file naskahmu sudah dikirim.</p>
+      </details>
+    </section>
+
+    <section class="panel contact" id="contact">
+      <div>
+        <h2 style="margin-bottom:4px">Siap pesan?</h2>
+        <p class="phone" style="color:var(--muted)">WhatsApp <b>0821-1302-5726</b></p>
+      </div>
+      <button type="button" class="btn" id="go-2">Lanjut ke pembayaran</button>
+    </section>
+  </div>
+
+  <!-- Invoice untuk cetak, dibuat otomatis -->
+  <div id="print-invoice">
+    <div class="invoice">
+      <div class="inv-head">
+        <div>
+          <div class="inv-title">INVOICE</div>
+          <div class="inv-meta">No. <span id="i-no"></span></div>
+          <div class="inv-meta">Tanggal <span id="i-date"></span></div>
+        </div>
+        <div class="inv-from">
+          <strong id="i-from"></strong>
+          <div>WhatsApp 0821-1302-5726</div>
+        </div>
+      </div>
+      <div class="inv-to">
+        <div class="lbl">Ditagihkan kepada</div>
+        <strong id="i-cust">-</strong>
+        <div id="i-title"></div>
+        <div id="i-contact"></div>
+      </div>
+      <table>
+        <thead><tr><th>Layanan</th><th class="n">Kata</th><th class="n">Tarif/kata</th><th class="n">Jumlah</th></tr></thead>
+        <tbody id="i-rows"></tbody>
+        <tfoot><tr><td colspan="3">Total tagihan</td><td class="n" id="i-total"></td></tr></tfoot>
+      </table>
+      <div class="pay" id="i-pay" hidden>
+        <div class="lbl">Pembayaran</div>
+        <div id="i-banks"></div>
+        <div id="i-ew-line" hidden>E-wallet <b id="i-ew"></b></div>
+        <div id="i-paylink-line" hidden>Bayar online <span id="i-paylink"></span></div>
+      </div>
+      <div class="inv-notes">
+        Catatan:
+        <ul>
+          <li>Total = tarif per kata × jumlah kata.</li>
+          <li>Tabel ikut dihitung. Daftar pustaka dihitung hanya jika dipilih.</li>
+          <li>Pembayaran yang sudah masuk tidak bisa dikembalikan.</li>
+          <li>Revisi unlimited hanya untuk naskah yang sama.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bar" id="bar">
+  <div class="t" id="bar-total">Rp0</div>
+  <button type="button" class="btn" id="go-3">Lanjut ke pembayaran</button>
+</div>
+
+<script>
+(function () {
+  /* ===== PENGATURAN PENJUAL: isi bagian ini dengan data pembayaranmu ===== */
+  var CONFIG = {
+    seller: "Accepted.id",   // nama yang tampil di portal dan invoice
+    wa: "6282113025726",                  // nomor WhatsApp admin, format 62...
+    banks: [                              // daftar rekening untuk transfer (boleh lebih dari satu)
+      { bank: "Bank Mandiri", acct: "1330012101838", holder: "Whisnu Febry Afrianto" },
+      { bank: "Bank Jago", acct: "501885498996", holder: "Whisnu Febry Afrianto" }
+    ],
+    ewallet: { names: ["ShopeePay", "GoPay", "OVO", "DANA"], number: "082113025726", holder: "Whisnu Febry Afrianto" }, // semua e-wallet memakai nomor yang sama; isi holder dengan nama pemilik akun
+    qris: false,                          // ubah ke true setelah mengunggah qris.png
+    payLink: ""                           // opsional: link pembayaran https://...
+  };
+  /* ===== AKHIR PENGATURAN ===== */
+
+  var DUR = ["7 hari", "6 hari", "5 hari", "4 hari", "3 hari", "2 hari", "24 jam"];
+  var RATES = [100, 130, 160, 200, 230, 260, 300];
+  var TAGS = { 0: "Paling hemat", 6: "Paling cepat" };
+  var st = { dur: 0, withRefs: true, method: "transfer", invNo: "" };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return "Rp" + Math.round(n).toLocaleString("id-ID"); };
+  var num = function (v) { var n = parseFloat(v); return isFinite(n) && n > 0 ? Math.floor(n) : 0; };
+  var nf = function (n) { return n.toLocaleString("id-ID"); };
+  var val = function (id) { return $(id).value.trim(); };
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function todayISO() { var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function longDate(iso) {
+    try { return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso + "T00:00:00")); }
+    catch (e) { return iso; }
+  }
+  function safeUrl(p) {
+    try { var u = new URL(p); if (u.protocol === "https:" || u.protocol === "http:") return u.href; } catch (e) {}
+    return "";
+  }
+  function calc() {
+    var m = num($("main").value), r = num($("refs").value);
+    var useR = st.withRefs ? r : 0, rate = RATES[st.dur];
+    return { m: m, r: useR, w: m + useR, rate: rate, total: rate * (m + useR) };
+  }
+  function mk(tag, cls, text) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text) el.textContent = text;
+    return el;
+  }
+  function fillBanks() {
+    var box = $("p-banks");
+    box.textContent = "";
+    (CONFIG.banks || []).forEach(function (b, i) {
+      var wrap = mk("div", "kv");
+      if (i) wrap.style.cssText = "border-top:1px solid var(--line); padding-top:14px";
+      var a = mk("div"); a.appendChild(mk("div", "k", "Bank")); a.appendChild(mk("div", "vv", b.bank || "-"));
+      var row = mk("div", "kv-row");
+      var n = mk("div"); n.appendChild(mk("div", "k", "Nomor rekening")); n.appendChild(mk("div", "vv num", b.acct || "-"));
+      var btn = mk("button", "btn btn-ghost", "Salin");
+      btn.type = "button"; btn.setAttribute("data-copy", "bank"); btn.setAttribute("data-i", String(i));
+      row.appendChild(n); row.appendChild(btn);
+      wrap.appendChild(a); wrap.appendChild(row);
+      if (b.holder) { var h = mk("div"); h.appendChild(mk("div", "k", "Atas nama")); h.appendChild(mk("div", "vv", b.holder)); wrap.appendChild(h); }
+      box.appendChild(wrap);
+    });
+  }
+  function fillInvoiceBanks() {
+    var box = $("i-banks");
+    box.textContent = "";
+    (CONFIG.banks || []).forEach(function (b) {
+      var line = [b.bank, b.acct, b.holder ? "a.n. " + b.holder : ""].filter(Boolean).join(" · ");
+      box.appendChild(mk("div", "", "Transfer: " + line));
+    });
+  }
+  function showNum(s) { return String(s).replace(/\D/g, "").replace(/(\d{4})(?=\d)/g, "$1-"); }
+  function waHref(text) { return "https://wa.me/" + CONFIG.wa + "?text=" + encodeURIComponent(text); }
+
+  /* ----- Tahap 1 ----- */
+  function render() {
+    var c = calc();
+    $("inc-no").setAttribute("aria-pressed", !st.withRefs);
+    $("inc-yes").setAttribute("aria-pressed", st.withRefs);
+    $("refs-field").hidden = !st.withRefs;
+
+    $("cards").innerHTML = DUR.map(function (d, i) {
+      return '<button type="button" class="card" role="radio" aria-checked="' + (i === st.dur) + '" data-i="' + i + '">' +
+        '<span class="tag' + (TAGS[i] ? "" : " none") + '">' + (TAGS[i] || "-") + "</span>" +
+        '<span class="d">' + d + "</span>" +
+        '<span class="p">' + fmt(RATES[i] * c.w) + "</span>" +
+        '<span class="r">' + fmt(RATES[i]) + " per kata</span></button>";
+    }).join("");
+
+    $("total").textContent = fmt(c.total);
+    $("bar-total").textContent = fmt(c.total);
+    $("calc").textContent = nf(c.w) + " kata × " + fmt(c.rate) + " per kata, durasi " + DUR[st.dur];
+
+    $("ask-1").href = waHref("Halo, saya ingin bertanya tentang layanan proofreading naskah penelitian.");
+  }
+
+  function goPay() {
+    var c = calc();
+    var name = val("f-name"), phone = val("f-phone"), email = val("f-email");
+    var phoneOk = phone.replace(/\D/g, "").length >= 9;
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    $("name-err").hidden = !!name;
+    $("f-name").setAttribute("aria-invalid", name ? "false" : "true");
+    $("phone-err").hidden = phoneOk;
+    $("f-phone").setAttribute("aria-invalid", phoneOk ? "false" : "true");
+    $("email-err").hidden = emailOk;
+    $("f-email").setAttribute("aria-invalid", emailOk ? "false" : "true");
+    $("words-err").hidden = c.m > 0;
+    var firstBad = !name ? $("f-name") : !phoneOk ? $("f-phone") : !emailOk ? $("f-email") : !c.m ? $("main") : null;
+    if (firstBad) {
+      $("hitung").scrollIntoView({ behavior: "smooth", block: "start" });
+      firstBad.focus({ preventScroll: true });
+      return;
+    }
+    st.invNo = "INV-" + todayISO().replace(/-/g, "") + "-" + pad(Math.floor(Math.random() * 100)) + pad(Math.floor(Math.random() * 100));
+    $("p-agree").checked = false;
+    $("hitung").hidden = true;
+    $("bar").hidden = true;
+    $("bayar").hidden = false;
+    $("bayar").style.display = "flex";
+    renderPay();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function backToCalc() {
+    $("bayar").hidden = true;
+    $("bayar").style.display = "none";
+    $("hitung").hidden = false;
+    $("bar").hidden = false;
+    $("hitung").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* ----- Tahap 2 ----- */
+  function available() {
+    return {
+      transfer: !!(CONFIG.banks && CONFIG.banks.length),
+      qris: !!CONFIG.qris,
+      ewallet: !!(CONFIG.ewallet && CONFIG.ewallet.number)
+    };
+  }
+  function setMethod(m) {
+    st.method = m;
+    ["transfer", "qris", "ewallet"].forEach(function (k) {
+      $("tab-" + k).setAttribute("aria-pressed", k === m);
+      $("pane-" + k).hidden = k !== m;
+    });
+  }
+  function setLine(wrapId, valId, text) {
+    $(wrapId).hidden = !text;
+    if (valId) $(valId).textContent = text || "";
+  }
+
+  function renderPay() {
+    var c = calc();
+    var cust = val("f-name"), title = val("f-title"), author = val("f-author"), no = st.invNo;
+    var ew = CONFIG.ewallet || {};
+    $("p-from").textContent = CONFIG.seller;
+    $("p-inv").textContent = no;
+    $("p-cust").textContent = cust;
+    $("p-total").textContent = fmt(c.total);
+    $("p-step-total").textContent = fmt(c.total);
+    $("p-title").textContent = title || "-";
+    $("p-author-wrap").hidden = !author;
+    $("p-author").textContent = author;
+    var contact = [val("f-phone"), val("f-email")].filter(Boolean).join(" · ");
+    $("p-contact-wrap").hidden = !contact;
+    $("p-contact").textContent = contact;
+    var rows = '<div class="p-line"><div>Teks utama<small>' + nf(c.m) + " kata × " + fmt(c.rate) + '</small></div><div class="v">' + fmt(c.rate * c.m) + "</div></div>";
+    if (c.r) rows += '<div class="p-line"><div>Daftar pustaka<small>' + nf(c.r) + " kata × " + fmt(c.rate) + '</small></div><div class="v">' + fmt(c.rate * c.r) + "</div></div>";
+    $("p-rows").innerHTML = rows;
+    $("p-dur").textContent = DUR[st.dur];
+
+    fillBanks();
+    $("p-ewn").textContent = (ew.names && ew.names.length ? ew.names.join(", ") : "E-wallet");
+    $("p-ewa").textContent = ew.number ? showNum(ew.number) : "-";
+    $("p-ewh").textContent = ew.holder || "-";
+    $("p-ewh-wrap").hidden = !ew.holder;
+
+    var av = available(), count = (av.transfer ? 1 : 0) + (av.qris ? 1 : 0) + (av.ewallet ? 1 : 0);
+    var plink = safeUrl(CONFIG.payLink);
+    $("tab-transfer").hidden = !av.transfer;
+    $("tab-qris").hidden = !av.qris;
+    $("tab-ewallet").hidden = !av.ewallet;
+    $("p-methods").hidden = count < 2;
+    var first = av.transfer ? "transfer" : av.qris ? "qris" : av.ewallet ? "ewallet" : "";
+    if (!av[st.method] && first) st.method = first;
+    if (first) setMethod(st.method);
+    $("p-tip").hidden = !count;
+    $("p-online").hidden = !plink;
+    if (plink) $("p-online").href = plink;
+
+    var agreed = $("p-agree").checked, hasAny = count > 0 || !!plink;
+    $("p-lock").hidden = agreed;
+    var pay = $("p-pay");
+    pay.hidden = !agreed || !hasAny;
+    pay.style.display = pay.hidden ? "none" : "flex";
+    $("p-nomethod").hidden = !(agreed && !hasAny);
+    $("p-paid").hidden = !agreed;
+
+    var detail = nf(c.m) + " kata" + (c.r ? " + daftar pustaka " + nf(c.r) + " kata" : "") + ", durasi " + DUR[st.dur];
+    $("p-paid").href = waHref(
+      "Halo, saya " + cust + " sudah melakukan pembayaran untuk invoice " + no + " sebesar " + fmt(c.total) + ".\n" +
+      (title ? "Naskah: " + title + "\n" : "") + (author ? "Nama penulis (untuk sertifikat): " + author + "\n" : "") + (val("f-phone") ? "Nomor HP: " + val("f-phone") + "\n" : "") + (val("f-email") ? "Email: " + val("f-email") + "\n" : "") + "Rincian: " + detail + ".\n" +
+      "Saya sudah membaca ketentuan. Bukti pembayaran dan file naskah saya kirim di sini.");
+    $("p-ask").href = waHref("Halo, saya " + cust + ". Saya ingin bertanya tentang invoice " + no + ".");
+
+    renderInvoice(c, cust, title, no, plink);
+  }
+
+  function renderInvoice(c, cust, title, no, plink) {
+    var ew = CONFIG.ewallet || {};
+    $("i-no").textContent = no;
+    $("i-date").textContent = longDate(todayISO());
+    $("i-from").textContent = CONFIG.seller;
+    $("i-cust").textContent = cust;
+    $("i-title").textContent = title ? "Naskah: " + title : "";
+    $("i-contact").textContent = [val("f-phone"), val("f-email")].filter(Boolean).join(" · ");
+    var rows = '<tr><td>Proofreading teks utama (' + DUR[st.dur] + ')</td><td class="n">' + nf(c.m) + '</td><td class="n">' + fmt(c.rate) + '</td><td class="n">' + fmt(c.rate * c.m) + "</td></tr>";
+    if (c.r) rows += '<tr><td>Proofreading daftar pustaka (' + DUR[st.dur] + ')</td><td class="n">' + nf(c.r) + '</td><td class="n">' + fmt(c.rate) + '</td><td class="n">' + fmt(c.rate * c.r) + "</td></tr>";
+    $("i-rows").innerHTML = rows;
+    $("i-total").textContent = fmt(c.total);
+    fillInvoiceBanks();
+    var ewText = ew.number ? [(ew.names || []).join(", "), showNum(ew.number), ew.holder ? "a.n. " + ew.holder : ""].filter(Boolean).join(" · ") : "";
+    setLine("i-ew-line", "i-ew", ewText);
+    setLine("i-paylink-line", "i-paylink", plink);
+    $("i-pay").hidden = !((CONFIG.banks && CONFIG.banks.length) || ewText || plink);
+  }
+
+  function copyText(text, btn) {
+    var orig = btn.textContent;
+    var ok = function () { btn.textContent = "Tersalin"; setTimeout(function () { btn.textContent = orig; }, 1500); };
+    var fb = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) { btn.textContent = "Salin manual"; }
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fb);
+    else fb();
+  }
+
+  /* ----- events ----- */
+  $("inc-no").addEventListener("click", function () { st.withRefs = false; render(); });
+  $("inc-yes").addEventListener("click", function () { st.withRefs = true; render(); });
+  $("main").addEventListener("input", render);
+  $("refs").addEventListener("input", render);
+  $("f-name").addEventListener("input", function () { if (val("f-name")) { $("name-err").hidden = true; $("f-name").setAttribute("aria-invalid", "false"); } });
+  $("f-phone").addEventListener("input", function () { $("phone-err").hidden = true; this.setAttribute("aria-invalid", "false"); });
+  $("f-email").addEventListener("input", function () { $("email-err").hidden = true; this.setAttribute("aria-invalid", "false"); });
+  $("cards").addEventListener("click", function (e) {
+    var b = e.target.closest(".card");
+    if (b) { st.dur = parseInt(b.dataset.i, 10); render(); }
+  });
+  ["go-1", "go-2", "go-3"].forEach(function (id) { $(id).addEventListener("click", goPay); });
+  $("back").addEventListener("click", backToCalc);
+  $("p-agree").addEventListener("change", renderPay);
+  ["transfer", "qris", "ewallet"].forEach(function (k) {
+    $("tab-" + k).addEventListener("click", function () { setMethod(k); });
+  });
+  $("p-qris").addEventListener("error", function () { this.hidden = true; $("p-qris-miss").hidden = false; });
+  $("print-v").addEventListener("click", function () { try { window.print(); } catch (e) {} });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("[data-copy]") : null;
+    if (!b) return;
+    var kind = b.getAttribute("data-copy"), text = "";
+    if (kind === "amount") text = String(calc().total);
+    else if (kind === "bank") { var bi = parseInt(b.getAttribute("data-i"), 10); text = String(((CONFIG.banks || [])[bi] || {}).acct || "").replace(/\s/g, ""); }
+    else if (kind === "ewacct") text = String((CONFIG.ewallet && CONFIG.ewallet.number) || "").replace(/\s/g, "");
+    if (text) copyText(text, b);
+  });
+
+  $("bayar").style.display = "none";
+  render();
+})();
+</script>
+
+</body>
+</html>
